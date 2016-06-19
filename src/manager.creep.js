@@ -4,6 +4,7 @@ var roleHarvester = require('./role.harvester');
 var roleUpgrader = require('./role.upgrader');
 var roleBuilder = require('./role.builder');
 var roleRepair = require('./role.repair');
+var roleGuard = require('./role.guard');
 
 class CreepManager extends Manager {
     constructor() {
@@ -36,6 +37,9 @@ class CreepManager extends Manager {
                     break;
                 case 'repair':
                     roleRepair.run(creep);
+                    break;
+                case 'guard':
+                    roleGuard.run(creep);
                     break;
                 default:
                     console.log("Creep " + creep.name + ' has no role assigned!');

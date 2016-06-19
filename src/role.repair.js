@@ -15,7 +15,7 @@ var roleHarvester = {
         if(creep.memory.repairing) {
             var target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return structure.hits < structure.hitsMax
+                    return structure.structureType !== STRUCTURE_WALL && structure.hits < structure.hitsMax
                 }
             });
 
@@ -24,7 +24,36 @@ var roleHarvester = {
                     creep.moveTo(target);
                 }
             } else {
-                roleBuilder.run(creep);
+                if(Game.spawns.Spawn1.energyAvailable < Game.spawns.Spawn1.energyCapacityAvailable) {
+                    target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+                        filter(structure) {
+                            return structure.structureType == STRUCTURE_CONTAINER && _.sum(structure.store) > 0;
+                        }
+                    });
+
+                    var targetSpawn =  creep.pos.findClosestByRange(FIND_STRUCTURES, {
+                        filter: (structure) => {
+                            return ((structure.structureType == STRUCTURE_EXTENSION ||
+                            structure.structureType == STRUCTURE_SPAWN ||
+                            structure.structureType == STRUCTURE_TOWER) && structure.energy < structure.energyCapacity)
+                        }
+                    });
+
+                    if(target && targetSpawn) {
+                       if(creep.carry.energy > 0) {
+                           if(creep.transfer(targetSpawn) !== OK) {
+                               creep.moveTo(targetSpawn);
+                           }
+                       } else {
+                           if(targetSpawn.transfer(creep) !== OK) {
+                               creep.moveTo(targetSpawn);
+                           }
+                       }
+                    }
+                } else {
+                    roleBuilder.run(creep);
+                }
+
             }
 
         } else {
