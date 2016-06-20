@@ -6,6 +6,7 @@ import MemoryManager from './manager.memory';
 import TowerManager from './manager.tower';
 
 module.exports.loop = function () {
+    PathFinder.use(true);
     let managers = [new MemoryManager(), new CreepManager(), new TowerManager()];
 
     _.each(managers, function(manager) {
