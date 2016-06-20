@@ -45,8 +45,8 @@ var roleHarvester = {
                                creep.moveTo(targetSpawn);
                            }
                        } else {
-                           if(targetSpawn.transfer(creep) !== OK) {
-                               creep.moveTo(targetSpawn);
+                           if(target.transfer(creep) !== OK) {
+                               creep.moveTo(target);
                            }
                        }
                     }

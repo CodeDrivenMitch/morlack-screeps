@@ -21,7 +21,7 @@ class CreepManager extends Manager {
             var creep = Game.creeps[name];
 
             // Conditions to keep checking or not
-            if(creep.fatigue > 0 || CreepManager.checkTimeToLive(creep) || CreepManager.checkTask(creep)) {
+            if( CreepManager.checkTimeToLive(creep) || CreepManager.checkTask(creep)) {
                 continue;
             }
 
@@ -51,6 +51,13 @@ class CreepManager extends Manager {
     static checkTimeToLive(creep) {
         if(!creep.memory.rejuvenating && creep.ticksToLive < 500) {
             creep.memory.rejuvenating = true;
+            
+            // Return to your previous place after rejuvenation
+            creep.memory.task = {
+                type: 'move',
+                x: creep.pos.x,
+                y: creep.pos.y
+            }
         }
 
         if(creep.memory.rejuvenating && creep.ticksToLive > 1200) {
