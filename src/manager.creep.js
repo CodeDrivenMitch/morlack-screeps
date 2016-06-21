@@ -22,28 +22,32 @@ class CreepManager extends Manager {
             var creep = Game.creeps[name];
 
             // Conditions to keep checking or not
-            if( CreepManager.checkTimeToLive(creep) || CreepManager.checkTask(creep)) {
+            if (CreepManager.checkTimeToLive(creep) || CreepManager.checkTask(creep)) {
                 continue;
             }
+            try {
+                switch (creep.memory.role) {
+                    case 'harvester':
+                        roleHarvester.run(creep);
+                        break;
+                    case 'upgrader':
+                        roleUpgrader.run(creep);
+                        break;
+                    case 'builder':
+                        roleBuilder.run(creep);
+                        break;
+                    case 'repair':
+                        roleRepair.run(creep);
+                        break;
+                    case 'guard':
+                        roleGuard.run(creep);
+                        break;
+                    default:
+                        console.log("Creep " + creep.name + ' has no role assigned!');
+                }
 
-            switch(creep.memory.role) {
-                case 'harvester':
-                    roleHarvester.run(creep);
-                    break;
-                case 'upgrader':
-                    roleUpgrader.run(creep);
-                    break;
-                case 'builder':
-                    roleBuilder.run(creep);
-                    break;
-                case 'repair':
-                    roleRepair.run(creep);
-                    break;
-                case 'guard':
-                    roleGuard.run(creep);
-                    break;
-                default:
-                    console.log("Creep " + creep.name + ' has no role assigned!');
+            } catch (error) {
+                console.warn("Script of creep " + creep.name + " terminated due to error: " + error);
             }
         }
     }
