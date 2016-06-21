@@ -16,9 +16,11 @@ class CreepManager extends Manager {
     }
     
     manage() {
+        console.log("Current tick: " + Game.time);
         for(var name in Game.creeps) {
             //noinspection JSUnfilteredForInLoop
             var creep = Game.creeps[name];
+            console.log("Starting management for " + name + " with role " + creep.memory.role);
 
             // Conditions to keep checking or not
             if( CreepManager.checkTimeToLive(creep) || CreepManager.checkTask(creep)) {

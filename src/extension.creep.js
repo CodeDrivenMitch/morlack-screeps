@@ -1,19 +1,23 @@
 /**
  * File with extensions for the Creep object
  */
-Creep.prototype.shouldExecute = function() {
-    if(this.memory.executing && this.carry.energy == 0) {
+Creep.prototype.shouldExecute = function () {
+    if (this.memory.executing && this.carry.energy == 0) {
         this.memory.executing = false;
     }
 
-    if(!this.memory.executing && this.carry.energy == this.carryCapacity) {
+    if (!this.memory.executing && this.carry.energy == this.carryCapacity) {
         this.memory.executing = true;
     }
 
     return this.memory.executing;
 };
 
-Creep.prototype.hasDestination = function() {
+Creep.prototype.isTired = function() {
+    return this.fatigue > 0;
+};
+
+Creep.prototype.hasDestination = function () {
     return !!this.memory.destination;
 };
 
@@ -21,14 +25,19 @@ Creep.prototype.hasDestination = function() {
  * Retrieves the information about current target
  * @returns {Structure|Creep|boolean}
  */
-Creep.prototype.getDesination = function() {
+Creep.prototype.getDestination = function () {
     return this.hasDestination() ? Game.getObjectById(this.memory.destination.id) : false;
+};
+
+Creep.prototype.resetDestination = function () {
+    delete this.memory.path;
+    delete this.memory.destination;
 };
 
 /**
  * @returns {string}
  */
-Creep.prototype.getDestinationType = function() {
+Creep.prototype.getDestinationType = function () {
     return this.hasDestination() ? this.memory.destination.type : 'none';
 };
 
@@ -36,38 +45,36 @@ Creep.prototype.getDestinationType = function() {
  *
  * @param range {Number}
  */
-Creep.prototype.shouldMove = function(range = 3) {
-    if(this.fatigue === 0 && this.hasDestination()) {
-        console.log(JSON.stringify(this.getDesination()));
-        return this.pos.inRangeTo(this.getDesination(), range);
-    }
-    return false;
+Creep.prototype.shouldMove = function (range = 3) {
+    return this.hasDestination() && !this.pos.inRangeTo(this.getDestination(), range);
 };
 
-Creep.prototype.createPath = function() {
-    let path = this.pos.findPathTo(this.getDesination());
+Creep.prototype.createPath = function () {
+    console.log("Creating path for " + this.name);
+    let path = this.pos.findPathTo(this.getDestination());
     this.setPath(path);
-    this.memory.path = path;
     return path;
 };
 
-Creep.prototype.destinationMoved = function() {
-    if(this.memory.destination.type !== 'creep') {
+Creep.prototype.destinationMoved = function () {
+    if (this.memory.destination.type !== 'creep') {
         return false;
     }
-    let currentDestination = this.getDesination();
+    let currentDestination = this.getDestination();
     return !(currentDestination.pos.x == this.memory.destination.originalX && currentDestination.pos.y == this.memory.destination.originalY)
 };
 
-Creep.prototype.moveToTarget = function() {
-    if(!this.hasPath() || this.destinationMoved()) {
-        this.createPath()
+Creep.prototype.moveToTarget = function () {
+    if(this.isTired()) {
+        return;
     }
-
-    this.moveByPath(this.getPath());
+    if (!this.hasPath() || this.destinationMoved() || this.moveByPath(this.getPath()) !== OK) {
+        this.createPath();
+        this.moveByPath(this.getPath());
+    }
 };
 
-Creep.prototype.setDestination = function(destination, type) {
+Creep.prototype.setDestination = function (destination, type) {
     this.memory.destination = {
         id: destination.id,
         originalX: destination.pos.x,
@@ -76,15 +83,15 @@ Creep.prototype.setDestination = function(destination, type) {
     };
 };
 
-Creep.prototype.hasPath = function() {
+Creep.prototype.hasPath = function () {
     return !!this.memory.path && _.isString(this.memory.path);
 };
 
-Creep.prototype.setPath = function(path) {
+Creep.prototype.setPath = function (path) {
     this.memory.path = Room.serializePath(path);
 };
 
-Creep.prototype.getPath = function() {
+Creep.prototype.getPath = function () {
     return Room.deserializePath(this.memory.path);
 };
 
@@ -92,11 +99,11 @@ Creep.prototype.getPath = function() {
  Finder methods
  */
 
-Creep.prototype.findClosestSource = function() {
+Creep.prototype.findClosestSource = function () {
     return this.pos.findClosestByRange(FIND_SOURCES);
 };
 
-Creep.prototype.findClosestHarvesterDestination = function() {
+Creep.prototype.findClosestHarvesterDestination = function () {
     let target = this.pos.findClosestByRange(FIND_STRUCTURES, {
         filter: (structure) => {
             return ((structure.structureType == STRUCTURE_EXTENSION ||
@@ -104,15 +111,16 @@ Creep.prototype.findClosestHarvesterDestination = function() {
             structure.structureType == STRUCTURE_TOWER) && structure.energy < structure.energyCapacity)
         }
     });
-    
+
+    console.log(this.name + " found structure with energy " + target.energy + " of " + target.energyCapacity);
     // None needed? Put it in container
-    if(!target) {
+    if (!target) {
         target = this.pos.findClosestByRange(FIND_STRUCTURES, {
             filter(structure) {
                 return structure.structureType == STRUCTURE_CONTAINER && _.sum(structure.store) < structure.storeCapacity;
             }
         });
     }
-    
+
     return target;
 };
