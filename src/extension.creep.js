@@ -1,3 +1,6 @@
+require('./extension.creep.finders');
+
+
 /**
  * File with extensions for the Creep object
  */
@@ -50,7 +53,6 @@ Creep.prototype.shouldMove = function (range = 3) {
 };
 
 Creep.prototype.createPath = function () {
-    console.log("Creating path for " + this.name);
     let path = this.pos.findPathTo(this.getDestination());
     this.setPath(path);
     return path;
@@ -76,6 +78,7 @@ Creep.prototype.moveToTarget = function () {
 
 Creep.prototype.setDestination = function (destination, type) {
     delete this.memory.path;
+    console.log("New destination for " + this.name, JSON.stringify(destination));
     this.memory.destination = {
         id: destination.id,
         originalX: destination.pos.x,
@@ -94,40 +97,4 @@ Creep.prototype.setPath = function (path) {
 
 Creep.prototype.getPath = function () {
     return Room.deserializePath(this.memory.path);
-};
-
-/**
- Finder methods
- */
-
-Creep.prototype.findClosestSource = function () {
-    return this.pos.findClosestByRange(FIND_SOURCES);
-};
-
-Creep.prototype.findClosestHarvesterDestination = function () {
-    let target = this.pos.findClosestByRange(FIND_STRUCTURES, {
-        filter: (structure) => {
-            return ((structure.structureType == STRUCTURE_EXTENSION ||
-            structure.structureType == STRUCTURE_SPAWN ) && structure.energy < structure.energyCapacity)
-        }
-    });
-
-    // None needed? Put it in container
-    if (!target) {
-        target = this.pos.findClosestByRange(FIND_STRUCTURES, {
-            filter(structure) {
-                return structure.structureType == STRUCTURE_TOWER  && structure.energy < structure.energyCapacity
-            }
-        });
-        
-        if(!target) {
-            target = this.pos.findClosestByRange(FIND_STRUCTURES, {
-                filter(structure) {
-                    return structure.structureType == STRUCTURE_CONTAINER && _.sum(structure.store) < structure.storeCapacity;
-                }
-            });
-        }
-    }
-
-    return target;
 };

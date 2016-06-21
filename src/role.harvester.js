@@ -2,7 +2,9 @@ var roleBuilder = require('./role.builder');
 
 var roleHarvester = {
 
-    /** @param {Creep} creep **/
+    /** @param {Creep} creep *
+     * @param times Safeguard for recursive run
+     */
     run: function (creep) {
         if(creep.shouldExecute()) {
             if(creep.hasDestination() && _.isEqual(creep.getDestinationType().valueOf(), "harvester".valueOf())) {
@@ -10,7 +12,7 @@ var roleHarvester = {
                     creep.moveToTarget();
                 } else {
                     let destination = creep.getDestination();
-                    if(destination.energy >= destination.energyCapacity -1 || creep.transfer(destination, RESOURCE_ENERGY) !== OK) {
+                    if(destination.energy >= destination.energyCapacity || creep.transfer(destination, RESOURCE_ENERGY) !== OK) {
                         console.log(creep.name + " resetting");
                         creep.resetDestination();
                         roleHarvester.run(creep);
@@ -18,8 +20,8 @@ var roleHarvester = {
                 }
             } else {
                 // Create new destination
-                let newDestination = creep.findClosestHarvesterDestination();
-                if(newDestination) {
+                let newDestination = creep.findClosestDestination("harvester");
+                if(!!newDestination) {
                     creep.setDestination(newDestination, 'harvester');
                     roleHarvester.run(creep);
                 } else {
@@ -30,6 +32,13 @@ var roleHarvester = {
         else {
             if(creep.hasDestination() && _.isEqual(creep.getDestinationType().valueOf(), "source".valueOf())) {
                 let source = creep.getDestination();
+
+                if(source.energy < 1) {
+                    creep.resetDestination();
+                    roleHarvester.run(creep);
+                    return;
+                }
+
                 if (creep.shouldMove(1)) {
                     creep.moveToTarget()
                 } else {
