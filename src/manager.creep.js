@@ -47,7 +47,7 @@ class CreepManager extends Manager {
                 }
 
             } catch (error) {
-                console.warn("Script of creep " + creep.name + " terminated due to error: " + error);
+                console.log("Script of creep " + creep.name + " terminated due to error: " + error);
             }
         }
     }
