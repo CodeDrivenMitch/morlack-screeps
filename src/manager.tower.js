@@ -20,7 +20,7 @@ class MemoryManager extends Manager{
             if(tower && tower.energy > 0) {
                 var targets = tower.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
-                        return structure.structureType && structure.hits < structure.hitsMax
+                        return structure.hits < structure.hitsMax
                     }
                 });
 
@@ -32,7 +32,7 @@ class MemoryManager extends Manager{
                    }
                 });
 
-                if (target > 0) {
+                if (target) {
                     tower.repair(target);
                 }
             }

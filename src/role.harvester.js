@@ -13,22 +13,31 @@ var roleHarvester = {
                     if(destination.energy >= destination.energyCapacity -1 || creep.transfer(destination, RESOURCE_ENERGY) !== OK) {
                         console.log(creep.name + " resetting");
                         creep.resetDestination();
+                        roleHarvester.run(creep);
                     }
                 }
             } else {
                 // Create new destination
                 let newDestination = creep.findClosestHarvesterDestination();
                 if(newDestination) {
-                    creep.setDestination(newDestination, 'harvester')
+                    creep.setDestination(newDestination, 'harvester');
+                    roleHarvester.run(creep);
                 } else {
                     roleBuilder.run(creep);
                 }
             }
         }
         else {
-            let source = creep.findClosestSource();
-            if (source && creep.harvest(source) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(source);
+            if(creep.hasDestination() && _.isEqual(creep.getDestinationType().valueOf(), "source".valueOf())) {
+                let source = creep.getDestination();
+                if (creep.shouldMove(1)) {
+                    creep.moveToTarget()
+                } else {
+                    creep.harvest(source);
+                }
+            } else {
+                creep.setDestination(creep.findClosestSource(), 'source');
+                roleHarvester.run(creep);
             }
         }
     }

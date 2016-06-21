@@ -75,11 +75,12 @@ Creep.prototype.moveToTarget = function () {
 };
 
 Creep.prototype.setDestination = function (destination, type) {
+    delete this.memory.path;
     this.memory.destination = {
         id: destination.id,
         originalX: destination.pos.x,
         originalY: destination.pos.y,
-        type: type
+        type: type ? type : 'none'
     };
 };
 
@@ -107,19 +108,25 @@ Creep.prototype.findClosestHarvesterDestination = function () {
     let target = this.pos.findClosestByRange(FIND_STRUCTURES, {
         filter: (structure) => {
             return ((structure.structureType == STRUCTURE_EXTENSION ||
-            structure.structureType == STRUCTURE_SPAWN ||
-            structure.structureType == STRUCTURE_TOWER) && structure.energy < structure.energyCapacity)
+            structure.structureType == STRUCTURE_SPAWN ) && structure.energy < structure.energyCapacity)
         }
     });
 
-    console.log(this.name + " found structure with energy " + target.energy + " of " + target.energyCapacity);
     // None needed? Put it in container
     if (!target) {
         target = this.pos.findClosestByRange(FIND_STRUCTURES, {
             filter(structure) {
-                return structure.structureType == STRUCTURE_CONTAINER && _.sum(structure.store) < structure.storeCapacity;
+                return structure.structureType == STRUCTURE_TOWER  && structure.energy < structure.energyCapacity
             }
         });
+        
+        if(!target) {
+            target = this.pos.findClosestByRange(FIND_STRUCTURES, {
+                filter(structure) {
+                    return structure.structureType == STRUCTURE_CONTAINER && _.sum(structure.store) < structure.storeCapacity;
+                }
+            });
+        }
     }
 
     return target;
