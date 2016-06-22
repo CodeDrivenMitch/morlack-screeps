@@ -1,22 +1,23 @@
 // Load extensions
 require('./extension.creep');
+require('./extension.room');
+require('./extension.tower');
+import MyGame from './my_game';
+
+// Looad profiler
 var profiler = require('./lib.profiler');
-
-import CreepManager from './manager.creep';
-import MemoryManager from './manager.memory';
-import TowerManager from './manager.tower';
-
 profiler.enable();
+
 module.exports.loop = function () {
+    
+    // Wrap it in the profiler callback
     profiler.wrap(function() {
         PathFinder.use(true);
-        let managers = [new MemoryManager(), new CreepManager(), new TowerManager()];
-
-        _.each(managers, function(manager) {
-            if(manager.shouldExecute()) {
-                manager.manage();
-            }
-        });
+        
+        
+        MyGame.runMemoryChecks();
+        MyGame.executeTowers();
+        MyGame.executeCreeps();
     });
 
 };

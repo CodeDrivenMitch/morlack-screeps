@@ -1,6 +1,34 @@
 require('./extension.creep.finders');
 
 
+var roleHarvester = require('./role.harvester');
+var roleUpgrader = require('./role.upgrader');
+var roleBuilder = require('./role.builder');
+var roleRepair = require('./role.repair');
+var roleGuard = require('./role.guard');
+
+Creep.prototype.execute = function() {
+    switch (this.memory.role) {
+        case 'harvester':
+            roleHarvester.run(this);
+            break;
+        case 'upgrader':
+            roleUpgrader.run(this);
+            break;
+        case 'builder':
+            roleBuilder.run(this);
+            break;
+        case 'repair':
+            roleRepair.run(this);
+            break;
+        case 'guard':
+            roleGuard.run(this);
+            break;
+        default:
+            console.log("Creep " + this.name + ' has no role assigned!');
+    }
+};
+
 /**
  * File with extensions for the Creep object
  */
@@ -53,7 +81,7 @@ Creep.prototype.shouldMove = function (range = 3) {
 };
 
 Creep.prototype.createPath = function () {
-    let path = this.pos.findPathTo(this.getDestination());
+        let path = this.pos.findPathTo(this.getDestination());
     this.setPath(path);
     return path;
 };
