@@ -22,6 +22,7 @@ Creep.prototype.execute = function() {
             break;
         default:
             console.log("Creep " + this.name + ' has no role assigned!');
+            break;
     }
 };
 
@@ -29,15 +30,15 @@ Creep.prototype.execute = function() {
  * File with extensions for the Creep object
  */
 Creep.prototype.shouldExecute = function () {
-    if (this.memory.executing && this.carry.energy == 0) {
-        this.memory.executing = false;
+    if (this.memory.shouldExecute && this.carry.energy == 0) {
+        this.memory.shouldExecute = false;
     }
 
-    if (!this.memory.executing && this.carry.energy == this.carryCapacity) {
-        this.memory.executing = true;
+    if (!this.memory.shouldExecute && this.carry.energy == this.carryCapacity) {
+        this.memory.shouldExecute = true;
     }
 
-    return this.memory.executing;
+    return this.memory.shouldExecute;
 };
 
 Creep.prototype.isTired = function() {
@@ -48,6 +49,10 @@ Creep.prototype.hasDestination = function () {
     return !!this.memory.destination;
 };
 
+Creep.prototype.isDestinationType = function(type) {
+    return _.isEqual(this.getDestinationType().valueOf(), type.valueOf())
+};
+
 /**
  * Retrieves the information about current target
  * @returns {Structure|Creep|boolean}
@@ -56,30 +61,11 @@ Creep.prototype.getDestination = function () {
     return this.hasDestination() ? Game.getObjectById(this.memory.destination.id) : false;
 };
 
-Creep.prototype.resetDestination = function () {
-    delete this.memory.path;
-    delete this.memory.destination;
-};
-
 /**
  * @returns {string}
  */
 Creep.prototype.getDestinationType = function () {
     return this.hasDestination() ? this.memory.destination.type : 'none';
-};
-
-/**
- *
- * @param range {Number}
- */
-Creep.prototype.shouldMove = function (range = 3) {
-    return this.hasDestination() && !this.pos.inRangeTo(this.getDestination(), range);
-};
-
-Creep.prototype.createPath = function () {
-        let path = this.pos.findPathTo(this.getDestination());
-    this.setPath(path);
-    return path;
 };
 
 Creep.prototype.destinationMoved = function () {
@@ -94,10 +80,9 @@ Creep.prototype.moveToTarget = function () {
     if(this.isTired()) {
         return;
     }
-    if (!this.hasPath() || this.destinationMoved() || this.moveByPath(this.getPath()) !== OK) {
-        this.createPath();
-        this.moveByPath(this.getPath());
-    }
+
+    let destination = this.getDestination();
+    console.log(this.moveTo(destination));
 };
 
 Creep.prototype.setDestination = function (destination, type) {
@@ -109,16 +94,4 @@ Creep.prototype.setDestination = function (destination, type) {
         originalY: destination.pos.y,
         type: type ? type : 'none'
     };
-};
-
-Creep.prototype.hasPath = function () {
-    return !!this.memory.path && _.isString(this.memory.path);
-};
-
-Creep.prototype.setPath = function (path) {
-    this.memory.path = Room.serializePath(path);
-};
-
-Creep.prototype.getPath = function () {
-    return Room.deserializePath(this.memory.path);
 };

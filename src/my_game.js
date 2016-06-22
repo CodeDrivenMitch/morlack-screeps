@@ -55,4 +55,4 @@ class MyGame {
     }
 }
 
-export default new MyGame();
+export default MyGame;
