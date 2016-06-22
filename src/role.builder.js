@@ -15,9 +15,10 @@ Creep.prototype.roleBuilder = function () {
         }
     }
     else {
+        let carryCapacity = this.carryCapacity;
         var container = this.pos.findClosestByRange(FIND_STRUCTURES, {
             filter(structure) {
-                return structure.structureType == STRUCTURE_CONTAINER && _.sum(structure.store) >= this.carryCapacity;
+                return structure.structureType == STRUCTURE_CONTAINER && _.sum(structure.store) >= carryCapacity;
             }
         });
 

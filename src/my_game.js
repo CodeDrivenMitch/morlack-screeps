@@ -6,6 +6,20 @@ class MyGame {
         this.game = Game;
     }
 
+    checkSettings() {
+        if(!Memory.settings) {
+            Memory.settings = {};
+        }
+
+        if(!Memory.settings.amountOfCreeps) {
+            Memory.settings.amountOfCreeps = {
+                'harvester': 1,
+                'builder': 1,
+                'upgrader': 1
+            }
+        }
+    }
+
     runCreepDoesNotExistCheck() {
         for (var name in this.game.creeps) {
             //noinspection JSUnfilteredForInLoop
@@ -27,6 +41,35 @@ class MyGame {
                 console.log("Could not execute tower with id " + tower.id + " because of error " + error);
             }
         });
+    }
+
+    executeSpawnCheck() {
+        let spawn = this.game.spawns.Spawn1;
+        if(spawn.spawning || spawn.room.energyAvailable < 200) {
+            return;
+        }
+
+        let creeps = _.countBy(this.game.creeps, function(creep) {
+            return creep.memory.role;
+        });
+        
+        _.find(Memory.settings.amountOfCreeps, function(amount, role) {
+            if(!creeps[role] || creeps[role] < amount) {
+                let parts = [];
+                let usableEnergy = spawn.room.energyAvailable;
+                let times = (usableEnergy - usableEnergy%200) / 200;
+                _.times(times, () => {parts.push(WORK)});
+                _.times(times, () => {parts.push(CARRY)});
+                _.times(times, () => {parts.push(MOVE)});
+
+                let name = spawn.createCreep(parts, undefined, {role: role});
+
+                console.log("Spawning new creep " + name + " with role " + role);
+                return true;
+            } else {
+                return false;
+            }
+        })
     }
 
     findAllMyTowers() {

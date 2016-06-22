@@ -82,7 +82,7 @@ Creep.prototype.moveToTarget = function () {
     }
 
     let destination = this.getDestination();
-    console.log(this.moveTo(destination));
+    this.moveTo(destination);
 };
 
 Creep.prototype.setDestination = function (destination, type) {

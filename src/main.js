@@ -6,6 +6,9 @@ import MyGame from './my_game';
 
 module.exports.loop = function () {
     let myGame = new MyGame();
+    
+    myGame.checkSettings();
+    myGame.executeSpawnCheck();
     myGame.runMemoryChecks();
     myGame.executeTowers();
     myGame.executeCreeps();
