@@ -1,46 +1,36 @@
-import roleUpgrader from './role.upgrader';
+Creep.prototype.roleBuilder = function () {
+    if (this.memory.building && this.carry.energy == 0) {
+        this.memory.building = false;
+    }
+    if (!this.memory.building && this.carry.energy == this.carryCapacity) {
+        this.memory.building = true;
+    }
 
-var roleBuilder = {
-
-    /** @param {Creep} creep **/
-    run: function(creep) {
-        if(creep.memory.building && creep.carry.energy == 0) {
-            creep.memory.building = false;
-        }
-        if(!creep.memory.building && creep.carry.energy == creep.carryCapacity) {
-            creep.memory.building = true;
-        }
-
-        if(creep.memory.building) {
-            var target = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
-            if(target) {
-                if(creep.build(target) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(target);
-                }
-            } else {
-                roleUpgrader.run(creep);
+    if (this.memory.building) {
+        var target = this.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
+        if (target) {
+            if (this.build(target) == ERR_NOT_IN_RANGE) {
+                this.moveTo(target);
             }
-        }
-        else {
-           var container = creep.pos.findClosestByRange(FIND_STRUCTURES, {
-                filter(structure) {
-                    return structure.structureType == STRUCTURE_CONTAINER && _.sum(structure.store) >= creep.carryCapacity;
-                }
-            });
-
-            if(container) {
-                if(container.transfer(creep, RESOURCE_ENERGY) !== OK) {
-                    creep.moveTo(container);
-                }
-            } else {
-                var source = creep.pos.findClosestByRange(FIND_SOURCES);
-                if(creep.harvest(source) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(source);
-                }
-            }
-
         }
     }
-};
+    else {
+        var container = this.pos.findClosestByRange(FIND_STRUCTURES, {
+            filter(structure) {
+                return structure.structureType == STRUCTURE_CONTAINER && _.sum(structure.store) >= this.carryCapacity;
+            }
+        });
 
-module.exports = roleBuilder;
+        if (container) {
+            if (container.transfer(creep, RESOURCE_ENERGY) !== OK) {
+                this.moveTo(container);
+            }
+        } else {
+            var source = this.pos.findClosestByRange(FIND_SOURCES);
+            if (this.harvest(source) == ERR_NOT_IN_RANGE) {
+                this.moveTo(source);
+            }
+        }
+
+    }
+};

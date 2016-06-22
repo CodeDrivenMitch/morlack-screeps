@@ -1,27 +1,21 @@
-var roleUpgrader = {
+Creep.prototype.roleUpgrader = function () {
+    if (this.memory.upgrading && this.carry.energy == 0) {
+        this.memory.upgrading = false;
+    }
+    if (!this.memory.upgrading && this.carry.energy == this.carryCapacity) {
+        this.memory.upgrading = true;
+    }
 
-    /** @param {Creep} creep **/
-    run: function(creep) {
-        if(creep.memory.upgrading && creep.carry.energy == 0) {
-            creep.memory.upgrading = false;
+
+    if (this.memory.upgrading) {
+        if (this.upgradeController(this.room.controller) == ERR_NOT_IN_RANGE) {
+            this.moveTo(this.room.controller);
         }
-        if(!creep.memory.upgrading && creep.carry.energy == creep.carryCapacity) {
-            creep.memory.upgrading = true;
-        }
-        
-        
-        if(creep.memory.upgrading) {
-            if(creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(creep.room.controller);
-            }
-        }
-        else {
-            var source = creep.pos.findClosestByRange(FIND_SOURCES);
-            if(creep.harvest(source) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(source);
-            }
+    }
+    else {
+        var source = this.pos.findClosestByRange(FIND_SOURCES);
+        if (this.harvest(source) == ERR_NOT_IN_RANGE) {
+            this.moveTo(source);
         }
     }
 };
-
-module.exports = roleUpgrader;

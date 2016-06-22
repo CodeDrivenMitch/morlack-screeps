@@ -1,55 +1,47 @@
 var roleBuilder = require('./role.builder');
 
-var roleHarvester = {
-
-    /** @param {Creep} creep *
-     * @param times Safeguard for recursive run
-     */
-    run: function (creep) {
-        if(creep.shouldExecute()) {
-            if(creep.hasDestination() && _.isEqual(creep.getDestinationType().valueOf(), "harvester".valueOf())) {
-                if(creep.shouldMove(1)) {
-                    creep.moveToTarget();
-                } else {
-                    let destination = creep.getDestination();
-                    if(destination.energy >= destination.energyCapacity || creep.transfer(destination, RESOURCE_ENERGY) !== OK) {
-                        console.log(creep.name + " resetting");
-                        creep.resetDestination();
-                        roleHarvester.run(creep);
-                    }
-                }
+Creep.prototype.roleHarvester = function () {
+    if (this.shouldExecute()) {
+        if (this.hasDestination() && _.isEqual(this.getDestinationType().valueOf(), "harvester".valueOf())) {
+            if (this.shouldMove(1)) {
+                this.moveToTarget();
             } else {
-                // Create new destination
-                let newDestination = creep.findClosestDestination("harvester");
-                if(!!newDestination) {
-                    creep.setDestination(newDestination, 'harvester');
-                    roleHarvester.run(creep);
-                } else {
-                    roleBuilder.run(creep);
+                let destination = this.getDestination();
+                if (destination.energy >= destination.energyCapacity || this.transfer(destination, RESOURCE_ENERGY) !== OK) {
+                    console.log(this.name + " resetting");
+                    this.resetDestination();
+                    this.roleHarvester();
                 }
             }
-        }
-        else {
-            if(creep.hasDestination() && _.isEqual(creep.getDestinationType().valueOf(), "source".valueOf())) {
-                let source = creep.getDestination();
-
-                if(source.energy < 1) {
-                    creep.resetDestination();
-                    roleHarvester.run(creep);
-                    return;
-                }
-
-                if (creep.shouldMove(1)) {
-                    creep.moveToTarget()
-                } else {
-                    creep.harvest(source);
-                }
+        } else {
+            // Create new destination
+            let newDestination = this.findClosestDestination("harvester");
+            if (!!newDestination) {
+                this.setDestination(newDestination, 'harvester');
+                this.roleHarvester();
             } else {
-                creep.setDestination(creep.findClosestSource(), 'source');
-                roleHarvester.run(creep);
+                this.roleBuilder();
             }
         }
     }
-};
+    else {
+        if (this.hasDestination() && _.isEqual(this.getDestinationType().valueOf(), "source".valueOf())) {
+            let source = this.getDestination();
 
-module.exports = roleHarvester;
+            if (source.energy < 1) {
+                this.resetDestination();
+                this.roleHarvester();
+                return;
+            }
+
+            if (this.shouldMove(1)) {
+                this.moveToTarget()
+            } else {
+                this.harvest(source);
+            }
+        } else {
+            this.setDestination(this.findClosestSource(), 'source');
+            this.roleHarvester();
+        }
+    }
+};

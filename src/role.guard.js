@@ -1,15 +1,9 @@
-var roleGuard = {
+Creep.prototype.roleGuard = function () {
+    var target = this.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
 
-    /** @param {Creep} creep **/
-    run: function (creep) {
-        var target = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-
-        if (target) {
-            if (creep.attack(target) !== OK) {
-                creep.moveTo(target);
-            }
+    if (target) {
+        if (this.attack(target) !== OK) {
+            this.moveTo(target);
         }
     }
 };
-
-module.exports = roleGuard;
