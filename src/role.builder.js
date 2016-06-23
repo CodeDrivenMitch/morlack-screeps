@@ -13,13 +13,14 @@ Creep.prototype.roleBuilder = function () {
                 this.moveTo(target);
             }
         } else {
+            this.roleSupplier();
         }
     }
     else {
         let carryCapacity = this.carryCapacity;
         var container = this.pos.findClosestByRange(FIND_STRUCTURES, {
             filter(structure) {
-                return structure.structureType == STRUCTURE_CONTAINER && _.sum(structure.store) >= carryCapacity;
+                return ((structure.structureType == STRUCTURE_CONTAINER || structure.strucureType === STRUCTURE_STORAGE) && (_.sum(structure.store) >= carryCapacity));
             }
         });
 

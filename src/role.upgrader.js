@@ -5,7 +5,7 @@ Creep.prototype.roleUpgraderDestination = function () {
 
     if(destination === false
         || !this.isDestinationType(destinationType)
-        || (!executing && destination.energy >= destination.energyCapacity))
+        || (!executing && _.sum(destination.store) === 0))
     {
         // New destination is needed
         let newDestination = executing ? this.room.controller : this.findClosestFilledContainer();
