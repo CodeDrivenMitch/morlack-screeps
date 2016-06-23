@@ -1,21 +1,36 @@
+Creep.prototype.roleUpgraderDestination = function () {
+    let executing = this.shouldExecute();
+    let destination = this.getDestination();
+    let destinationType = executing ? "upgrader" : "container";
+
+    if(destination === false
+        || !this.isDestinationType(destinationType)
+        || (!executing && destination.energy >= destination.energyCapacity))
+    {
+        // New destination is needed
+        let newDestination = executing ? this.room.controller : this.findClosestFilledContainer();
+        if(!newDestination) {
+            return false;
+        }
+        this.setDestination(newDestination, destinationType);
+    }
+
+    return true;
+};
+
+
 Creep.prototype.roleUpgrader = function () {
-    if (this.memory.upgrading && this.carry.energy == 0) {
-        this.memory.upgrading = false;
-    }
-    if (!this.memory.upgrading && this.carry.energy == this.carryCapacity) {
-        this.memory.upgrading = true;
+    if (!this.roleUpgraderDestination()) {
+        // Fallback role
+        this.roleHarvester();
+        return;
     }
 
+    let destination = this.getDestination();
+    let result = this.shouldExecute() ? this.upgradeController(this.room.controller) : destination.transfer(this, RESOURCE_ENERGY);
 
-    if (this.memory.upgrading) {
-        if (this.upgradeController(this.room.controller) == ERR_NOT_IN_RANGE) {
-            this.moveTo(this.room.controller);
-        }
-    }
-    else {
-        var source = this.pos.findClosestByRange(FIND_SOURCES);
-        if (this.harvest(source) == ERR_NOT_IN_RANGE) {
-            this.moveTo(source);
-        }
+
+    if(result != OK) {
+        this.moveToTarget();
     }
 };

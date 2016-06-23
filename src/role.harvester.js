@@ -1,15 +1,14 @@
-let _ = require('lodash');
-
 Creep.prototype.roleHarvesterDestination = function () {
     let executing = this.shouldExecute();
     let destination = this.getDestination();
     let destinationType = executing ? "harvester" : "source";
 
-    if(destination === false
-        || !this.isDestinationType(destinationType)
-        || executing && destination.energy >= destination.energyCapacity
-        || !executing && destination.energy < 1)
-    {
+    if(    (destination === false)
+        || (this.isDestinationType(destinationType) === false)
+        || (executing && (_.sum(destination.store) > (destination.storeCapacity - this.carryCapacity)))
+        || (!executing && (destination.energy < 1))
+    ) {
+        console.log(this.name + " is finding a new destination...");
         // New destination is needed
         let newDestination = executing ? this.findClosestDestination("harvester") : this.findClosestSource();
         if(!newDestination) {
@@ -32,6 +31,7 @@ Creep.prototype.roleHarvester = function () {
     let destination = this.getDestination();
     let result = this.shouldExecute() ? this.transfer(destination, RESOURCE_ENERGY) : this.harvest(destination);
 
+    
     if(result != OK) {
         this.moveToTarget();
     }

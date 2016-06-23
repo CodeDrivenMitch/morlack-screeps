@@ -1,7 +1,13 @@
 Creep.prototype.getDestinationPriorities = function(role) {
     switch(role.valueOf()) {
         case "harvester".valueOf():
-            return [this.findClosestEmptySpawnStructure, this.findClosestEmptyTower, this.findClosestEmptyContainer];
+            return [this.findClosestEmptyContainer];
+        case "upgrader".valueOf():
+            return [];
+        case "builder".valueOf():
+            return [];
+        case "supplier".valueOf():
+            return [this.findClosestEmptySpawnStructure, this.findClosestEmptyTower, this.findStorage];
         default:
             return [];
     }
@@ -16,18 +22,36 @@ Creep.prototype.findClosestSource = function () {
     });
 };
 
+Creep.prototype.findStorage = function() {
+    return this.pos.findClosestByRange(FIND_STRUCTURES, {
+        filter(structure) {
+            return (structure.structureType == STRUCTURE_STORAGE);
+        }
+    });
+};
+
+Creep.prototype.findClosestFilledContainer = function () {
+    let self = this;
+    return this.pos.findClosestByRange(FIND_STRUCTURES, {
+        filter(structure) {
+            return (structure.structureType == STRUCTURE_CONTAINER) && (structure.store.energy >= self.carryCapacity);
+        }
+    });
+};
+
 Creep.prototype.findClosestEmptyTower = function() {
     return this.pos.findClosestByRange(FIND_STRUCTURES, {
         filter(structure) {
-            return structure.structureType == STRUCTURE_TOWER  && structure.energy < structure.energyCapacity
+            return structure.structureType == STRUCTURE_TOWER  && structure.energy < structure.energyCapacity * 0.75
         }
     });
 };
 
 Creep.prototype.findClosestEmptyContainer = function() {
+    let self = this;
     return this.pos.findClosestByRange(FIND_STRUCTURES, {
         filter(structure) {
-            return structure.structureType == STRUCTURE_CONTAINER && _.sum(structure.store) < structure.storeCapacity;
+            return (structure.structureType == STRUCTURE_CONTAINER || structure.stuctureType == STRUCTURE_STORAGE) && _.sum(structure.store) < (structure.storeCapacity - self.carryCapacity);
         }
     });
 };

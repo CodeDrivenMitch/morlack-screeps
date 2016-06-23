@@ -12,6 +12,7 @@ Creep.prototype.roleBuilder = function () {
             if (this.build(target) == ERR_NOT_IN_RANGE) {
                 this.moveTo(target);
             }
+        } else {
         }
     }
     else {
@@ -23,12 +24,12 @@ Creep.prototype.roleBuilder = function () {
         });
 
         if (container) {
-            if (container.transfer(creep, RESOURCE_ENERGY) !== OK) {
+            if (container.transfer(this, RESOURCE_ENERGY) !== OK) {
                 this.moveTo(container);
             }
         } else {
             var source = this.pos.findClosestByRange(FIND_SOURCES);
-            if (this.harvest(source) == ERR_NOT_IN_RANGE) {
+            if (this.harvest(source) !== OK) {
                 this.moveTo(source);
             }
         }
