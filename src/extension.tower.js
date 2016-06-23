@@ -8,6 +8,11 @@ StructureTower.prototype.execute = function() {
 
     let possibleTargets = this.room.findAllDamagedStructures();
 
+    if(Memory.disableWallRepair) {
+        possibleTargets = _.filter(possibleTargets, (possibleTarget) => {
+            return possibleTarget.structureType !== STRUCTURE_WALL;
+        })
+    }
     let target = null;
     // Find target lowest on hits
     _.each(possibleTargets, (possibleTarget) => {
