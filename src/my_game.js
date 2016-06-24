@@ -32,7 +32,7 @@ class MyGame {
 
     executeSpawnCheck() {
         let spawn = this.game.spawns.Spawn1;
-        if(spawn.spawning || spawn.room.energyAvailable < spawn.room.energyCapacityAvailable * 0.25) {
+        if(spawn.spawning || spawn.room.energyAvailable < spawn.room.energyCapacityAvailable - spawn.room.energyCapacityAvailable%200) {
             return;
         }
 
