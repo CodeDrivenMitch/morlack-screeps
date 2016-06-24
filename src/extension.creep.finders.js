@@ -5,7 +5,7 @@ Creep.prototype.getDestinationPriorities = function(role) {
         case "upgrader".valueOf():
             return [];
         case "builder".valueOf():
-            return [];
+            return [this.findClosestBuildingSite];
         case "supplier".valueOf():
             return [this.findClosestEmptySpawnStructure, this.findClosestEmptyTower, this.findStorage];
         default:
@@ -17,7 +17,7 @@ Creep.prototype.getDestinationPriorities = function(role) {
 Creep.prototype.findClosestSource = function () {
     return this.pos.findClosestByRange(FIND_SOURCES, {
         filter(source) {
-            return source.energy > 0;
+            return source.energy > 0 && source.hasEmptySlot();
         }
     });
 };
@@ -51,7 +51,7 @@ Creep.prototype.findClosestEmptyContainer = function() {
     let self = this;
     return this.pos.findClosestByRange(FIND_STRUCTURES, {
         filter(structure) {
-            return (structure.structureType == STRUCTURE_CONTAINER || structure.stuctureType == STRUCTURE_STORAGE) && _.sum(structure.store) < (structure.storeCapacity - self.carryCapacity);
+            return (structure.structureType == STRUCTURE_CONTAINER || structure.stuctureType == STRUCTURE_STORAGE) && _.sum(structure.store) < (structure.storeCapacity - self.carryCapacity) && (!structure instanceof ConstructionSite);
         }
     });
 };
@@ -63,6 +63,10 @@ Creep.prototype.findClosestEmptySpawnStructure = function() {
             structure.structureType == STRUCTURE_SPAWN ) && structure.energy < structure.energyCapacity)
         }
     });
+};
+
+Creep.prototype.findClosestBuildingSite = function() {
+    return this.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
 };
 
 Creep.prototype.findClosestDestination = function (role) {
