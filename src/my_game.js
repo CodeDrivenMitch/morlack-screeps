@@ -20,19 +20,6 @@ class MyGame {
         }
     }
 
-    runCreepDoesNotExistCheck() {
-        for (var name in this.game.creeps) {
-            //noinspection JSUnfilteredForInLoop
-            if (!Game.creeps[name]) {
-                delete Memory.creeps[name];
-            }
-        }
-    }
-
-    runMemoryChecks() {
-        this.runCreepDoesNotExistCheck();
-    }
-
     executeTowers() {
         _.each(this.findAllMyTowers(), (tower) => {
             try {
@@ -58,6 +45,9 @@ class MyGame {
                 let parts = [];
                 let usableEnergy = spawn.room.energyAvailable;
                 let times = (usableEnergy - usableEnergy%200) / 200;
+                if(times === 0) {
+                    return false;
+                }
                 _.times(times, () => {parts.push(WORK)});
                 _.times(times, () => {parts.push(CARRY)});
                 _.times(times, () => {parts.push(MOVE)});
