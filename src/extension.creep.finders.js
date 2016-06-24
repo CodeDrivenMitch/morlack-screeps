@@ -1,7 +1,7 @@
 Creep.prototype.getDestinationPriorities = function(role) {
     switch(role.valueOf()) {
         case "harvester".valueOf():
-            return [this.findClosestEmptyContainer];
+            return [this.findClosestEmptyContainer, this.findClosestEmptySpawnStructure];
         case "upgrader".valueOf():
             return [];
         case "builder".valueOf():
