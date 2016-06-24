@@ -1,7 +1,7 @@
 Creep.prototype.roleBuilderDestination = function () {
     let executing = this.shouldExecute();
     let destination = this.getDestination();
-    let destinationType = executing ? "harvester" : "source";
+    let destinationType = executing ? "builder" : "source";
 
     if(    (destination === false || destination === null)
         || (this.isDestinationType(destinationType) === false)
