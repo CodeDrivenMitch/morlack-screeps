@@ -60,6 +60,14 @@ Creep.prototype.actOnTarget = function() {
             return this.transfer(destination, RESOURCE_ENERGY);
         case StructureController: 
             return this.upgradeController(destination);
+        case StructureContainer:
+            switch(this.getDestinationType()) {
+                case "builder_source":
+                case "upgrader_source":
+                    return destination.transfer(this, RESOURCE_ENERGY);
+                case "harvester":
+                    return this.transfer(destination, RESOURCE_ENERGY);
+            }
     }
 };
 

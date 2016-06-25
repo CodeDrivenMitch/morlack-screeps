@@ -1,14 +1,14 @@
 Creep.prototype.roleUpgraderDestination = function () {
     let executing = this.shouldExecute();
     let destination = this.getDestination();
-    let destinationType = executing ? "upgrader" : "container";
+    let destinationType = executing ? "upgrader" : "upgrader_source";
 
     if(destination === false
         || !this.isDestinationType(destinationType)
         || (!executing && _.sum(destination.store) === 0))
     {
         // New destination is needed
-        let newDestination = executing ? this.room.controller : this.findClosestFilledContainer();
+        let newDestination = executing ? this.room.controller : this.findClosestSource();
         if(!newDestination) {
             return false;
         }
