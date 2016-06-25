@@ -6,6 +6,7 @@ require('./role.upgrader');
 require('./role.builder');
 require('./role.guard');
 require('./role.supplier');
+require('./role.repair');
 
 Creep.prototype.execute = function() {
     switch (this.memory.role) {
@@ -23,6 +24,9 @@ Creep.prototype.execute = function() {
             break;
         case 'supplier':
             this.roleSupplier();
+            break;
+        case 'repair':
+            this.roleRepair();
             break;
         default:
             console.log("Creep " + this.name + ' has no role assigned!');
