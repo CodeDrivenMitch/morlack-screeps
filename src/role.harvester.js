@@ -28,12 +28,8 @@ Creep.prototype.roleHarvester = function () {
         this.roleBuilder();
         return;
     }
-
-    let destination = this.getDestination();
-    let result = this.shouldExecute() ? this.transfer(destination, RESOURCE_ENERGY) : this.harvest(destination);
-
     
-    if(result != OK) {
+    if(this.actOnTarget() != OK) {
         this.moveToTarget();
     }
 };

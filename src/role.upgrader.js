@@ -26,11 +26,7 @@ Creep.prototype.roleUpgrader = function () {
         return;
     }
 
-    let destination = this.getDestination();
-    let result = this.shouldExecute() ? this.upgradeController(this.room.controller) : destination.transfer(this, RESOURCE_ENERGY);
-
-
-    if(result != OK) {
+    if(this.actOnTarget() != OK) {
         this.moveToTarget();
     }
 };

@@ -23,6 +23,13 @@ Creep.prototype.roleRepair = function () {
 
     } else {
         var container = this.findClosestFilledContainer();
+        if(!container) {
+            let source = this.findClosestSource(true);
+            if(this.harvest(source) != OK) {
+                this.moveTo(source);
+                return;
+            }
+        }
         if (container && container.transfer(this, RESOURCE_ENERGY) != OK) {
             this.moveTo(container);
         }

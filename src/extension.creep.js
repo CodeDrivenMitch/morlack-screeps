@@ -49,6 +49,20 @@ Creep.prototype.shouldExecute = function () {
     return this.memory.shouldExecute;
 };
 
+Creep.prototype.actOnTarget = function() {
+    let destination = this.getDestination();
+    switch(destination.constructor) {
+        case ConstructionSite:
+            return this.build(destination);
+        case Source:
+            return this.harvest(destination);
+        case StructureSpawn:
+            return this.transfer(destination, RESOURCE_ENERGY);
+        case StructureController: 
+            return this.upgradeController(destination);
+    }
+};
+
 Creep.prototype.isTired = function() {
     return this.fatigue > 0;
 };
@@ -63,7 +77,7 @@ Creep.prototype.isDestinationType = function(type) {
 
 /**
  * Retrieves the information about current target
- * @returns {Structure|Creep|boolean}
+ * @returns {Structure|Creep|boolean|Source|Spawn}
  */
 Creep.prototype.getDestination = function () {
     return this.hasDestination() ? Game.getObjectById(this.memory.destination.id) : false;
