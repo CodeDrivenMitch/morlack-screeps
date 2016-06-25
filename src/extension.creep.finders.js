@@ -51,7 +51,7 @@ Creep.prototype.findClosestEmptyContainer = function() {
     let self = this;
     return this.pos.findClosestByRange(FIND_STRUCTURES, {
         filter(structure) {
-            return (structure.structureType == STRUCTURE_CONTAINER || structure.stuctureType == STRUCTURE_STORAGE) && _.sum(structure.store) < (structure.storeCapacity - self.carryCapacity) && (!structure instanceof ConstructionSite);
+            return (structure.structureType == STRUCTURE_CONTAINER || structure.stuctureType == STRUCTURE_STORAGE) && (_.sum(structure.store) < (structure.storeCapacity - self.carryCapacity));
         }
     });
 };
