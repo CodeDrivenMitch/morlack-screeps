@@ -6,6 +6,14 @@ StructureTower.prototype.execute = function() {
         return;
     }
 
+    // Try to attack
+    var attackTarget = this.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+
+    if (attackTarget) {
+        this.attack(attackTarget);
+        return;
+    }
+
     let possibleTargets = this.room.findAllDamagedStructures();
 
     if(Memory.disableWallRepair) {
