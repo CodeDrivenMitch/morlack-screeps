@@ -14,7 +14,7 @@ Creep.prototype.getDestinationPriorities = function (targetType) {
         case C.TARGET_UPGRADER_UPGRADE:
             return [this.findRoomController];
         case C.TARGET_UPGRADER_SOURCE:
-            return [this.findClosestFilledContainer(), this.findClosestSource];
+            return [this.findClosestFilledContainer(6), this.findClosestSource];
         case C.TARGET_BUILDER_BUILD:
             return [this.findClosestBuildingSite];
         case C.TARGET_BUILDER_SOURCE:
