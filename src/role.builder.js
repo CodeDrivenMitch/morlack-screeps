@@ -6,6 +6,7 @@ Creep.prototype.roleBuilderDestination = function () {
     if ((destination === false || destination === null)
         || (this.isDestinationType(destinationType) === false)
         || (!executing && (destination.energy < 1))
+        || (!!this.memory._move &&  Room.deserializePath(this.memory._move.path).length > 10)
     ) {
         // New destination is needed
         let newDestination = this.findClosestDestination(destinationType);
@@ -21,6 +22,7 @@ Creep.prototype.roleBuilderDestination = function () {
 
 Creep.prototype.roleBuilder = function () {
     if (!this.roleBuilderDestination()) {
+        this.roleSupplier();
         return;
     }
 
