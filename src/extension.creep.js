@@ -1,5 +1,6 @@
 require('./extension.creep.finders');
 
+let C = require('./constants');
 
 require('./role.harvester');
 require('./role.upgrader');
@@ -10,22 +11,22 @@ require('./role.repair');
 
 Creep.prototype.execute = function() {
     switch (this.memory.role) {
-        case 'harvester':
+        case C.ROLE_HARVESTER:
             this.roleHarvester();
             break;
-        case 'upgrader':
+        case C.ROLE_UPGRADER:
             this.roleUpgrader();
             break;
-        case 'builder':
+        case C.ROLE_BUILDER:
             this.roleBuilder();
             break;
-        case 'guard':
+        case C.ROLE_GUARD:
             this.roleGuard();
             break;
-        case 'supplier':
+        case C.ROLE_SUPPLIER:
             this.roleSupplier();
             break;
-        case 'repair':
+        case C.ROLE_REPAIR:
             this.roleRepair();
             break;
         default:
@@ -62,10 +63,10 @@ Creep.prototype.actOnTarget = function() {
             return this.upgradeController(destination);
         case StructureContainer:
             switch(this.getDestinationType()) {
-                case "builder_source":
-                case "upgrader_source":
+                case C.TARGET_BUILDER_SOURCE:
+                case C.TARGET_UPGRADER_SOURCE:
                     return destination.transfer(this, RESOURCE_ENERGY);
-                case "harvester":
+                case C.TARGET_HARVESTER_CONTAINER:
                     return this.transfer(destination, RESOURCE_ENERGY);
             }
     }
@@ -80,7 +81,7 @@ Creep.prototype.hasDestination = function () {
 };
 
 Creep.prototype.isDestinationType = function(type) {
-    return _.isEqual(this.getDestinationType().valueOf(), type.valueOf())
+    return _.isEqual(this.getDestinationType(), type)
 };
 
 /**
@@ -96,14 +97,6 @@ Creep.prototype.getDestination = function () {
  */
 Creep.prototype.getDestinationType = function () {
     return this.hasDestination() ? this.memory.destination.type : 'none';
-};
-
-Creep.prototype.destinationMoved = function () {
-    if (this.memory.destination.type !== 'creep') {
-        return false;
-    }
-    let currentDestination = this.getDestination();
-    return !(currentDestination.pos.x == this.memory.destination.originalX && currentDestination.pos.y == this.memory.destination.originalY)
 };
 
 Creep.prototype.moveToTarget = function () {

@@ -1,7 +1,9 @@
+let C = require('./constants');
+
 Creep.prototype.roleSupplierDestination = function () {
     let executing = this.shouldExecute();
     let destination = this.getDestination();
-    let destinationType = executing ? "put" : "get";
+    let destinationType = executing ? C.TARGET_SUPPLIER_PUT : C.TARGET_SUPPLIER_GET;
 
     if(     (destination === false)
         ||  (!this.isDestinationType(destinationType))
@@ -10,7 +12,7 @@ Creep.prototype.roleSupplierDestination = function () {
     )
     {
         // New destination is needed
-        let newDestination = executing ? this.findClosestDestination("supplier") : this.findClosestFilledContainer();
+        let newDestination = this.findClosestDestination(destinationType);
         if(!newDestination) {
             return false;
         }

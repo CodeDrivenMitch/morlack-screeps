@@ -1,7 +1,9 @@
+let C = require('./constants');
+
 Creep.prototype.roleBuilderDestination = function () {
     let executing = this.shouldExecute();
     let destination = this.getDestination();
-    let destinationType = executing ? "builder_build" : "builder_source";
+    let destinationType = executing ? C.TARGET_BUILDER_BUILD : C.TARGET_BUILDER_SOURCE;
 
     if ((destination === false || destination === null)
         || (this.isDestinationType(destinationType) === false)

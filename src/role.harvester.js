@@ -1,7 +1,9 @@
+let C = require('./constants');
+
 Creep.prototype.roleHarvesterDestination = function () {
     let executing = this.shouldExecute();
     let destination = this.getDestination();
-    let destinationType = executing ? "harvester" : "source";
+    let destinationType = executing ? C.TARGET_HARVESTER_CONTAINER : C.TARGET_HARVESTER_SOURCE;
 
     if(    (destination === false)
         || (this.isDestinationType(destinationType) === false)
@@ -11,7 +13,7 @@ Creep.prototype.roleHarvesterDestination = function () {
     ) {
         console.log(this.name + " is finding a new destination...");
         // New destination is needed
-        let newDestination = executing ? this.findClosestDestination("harvester") : this.findClosestSource();
+        let newDestination = this.findClosestDestination(destinationType);
         if(!newDestination) {
             return false;
         }

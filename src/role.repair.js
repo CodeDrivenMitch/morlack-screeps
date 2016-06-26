@@ -22,14 +22,15 @@ Creep.prototype.roleRepair = function () {
         }
 
     } else {
-        var container = this.findClosestFilledContainer();
+        var container = this.findClosestFilledContainer()();
         if(!container) {
-            let source = this.findClosestSource(true);
+            let source = this.findClosestSourceWithEmptySlot(true);
             if(this.harvest(source) != OK) {
                 this.moveTo(source);
-                return;
             }
+            return;
         }
+        console.log(JSON.stringify(container));
         if (container && container.transfer(this, RESOURCE_ENERGY) != OK) {
             this.moveTo(container);
         }
