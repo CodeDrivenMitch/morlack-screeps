@@ -5,10 +5,11 @@ Creep.prototype.roleSupplierDestination = function () {
     let destination = this.getDestination();
     let destinationType = executing ? C.TARGET_SUPPLIER_PUT : C.TARGET_SUPPLIER_GET;
 
-    if(     (destination === false)
+    if(     (!destination)
         ||  (!this.isDestinationType(destinationType))
         ||  (executing  && (destination.energy >= destination.energyCapacity))
-        ||  (!executing && (destination.store.energy > 0))
+        ||  (!executing && (!!destination.store && destination.store.energy > 0))
+        ||  (!executing && (!destination.store && destination.energy > 0))
     )
     {
         // New destination is needed
@@ -30,8 +31,7 @@ Creep.prototype.roleSupplier = function () {
         return;
     }
 
-    let destination = this.getDestination();
-    let result = this.shouldExecute() ? this.transfer(destination, RESOURCE_ENERGY) : destination.transfer(this, RESOURCE_ENERGY);
+    let result = this.actOnTarget();
 
 
     if(result != OK) {

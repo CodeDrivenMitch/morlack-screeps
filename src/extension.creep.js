@@ -9,7 +9,7 @@ require('./role.guard');
 require('./role.supplier');
 require('./role.repair');
 
-Creep.prototype.execute = function() {
+Creep.prototype.execute = function () {
     switch (this.memory.role) {
         case C.ROLE_HARVESTER:
             this.roleHarvester();
@@ -50,29 +50,35 @@ Creep.prototype.shouldExecute = function () {
     return this.memory.shouldExecute;
 };
 
-Creep.prototype.actOnTarget = function() {
+Creep.prototype.actOnTarget = function () {
     let destination = this.getDestination();
-    switch(destination.constructor) {
+    switch (destination.constructor) {
         case ConstructionSite:
             return this.build(destination);
         case Source:
             return this.harvest(destination);
         case StructureSpawn:
             return this.transfer(destination, RESOURCE_ENERGY);
-        case StructureController: 
+        case StructureController:
             return this.upgradeController(destination);
         case StructureContainer:
-            switch(this.getDestinationType()) {
+
+            switch (this.getDestinationType()) {
+                case C.TARGET_SUPPLIER_GET:
                 case C.TARGET_BUILDER_SOURCE:
                 case C.TARGET_UPGRADER_SOURCE:
                     return destination.transfer(this, RESOURCE_ENERGY);
                 case C.TARGET_HARVESTER_CONTAINER:
                     return this.transfer(destination, RESOURCE_ENERGY);
+                default:
+                    return false;
             }
+        case Resource:
+            return this.pickup(destination);
     }
 };
 
-Creep.prototype.isTired = function() {
+Creep.prototype.isTired = function () {
     return this.fatigue > 0;
 };
 
@@ -80,7 +86,7 @@ Creep.prototype.hasDestination = function () {
     return !!this.memory.destination;
 };
 
-Creep.prototype.isDestinationType = function(type) {
+Creep.prototype.isDestinationType = function (type) {
     return _.isEqual(this.getDestinationType(), type)
 };
 
@@ -100,7 +106,7 @@ Creep.prototype.getDestinationType = function () {
 };
 
 Creep.prototype.moveToTarget = function () {
-    if(this.isTired()) {
+    if (this.isTired()) {
         return;
     }
 
