@@ -11,6 +11,7 @@ Creep.prototype.roleHarvesterDestination = function () {
         || (executing && (destination.structureType === STRUCTURE_SPAWN || destination.structureType === STRUCTURE_EXTENSION) && (destination.energy > (destination.energyCapacity - this.carryCapacity)))
         || (!executing && (destination.energy < 1))
     ) {
+        delete this.memory.destination;
         console.log(this.name + " is finding a new destination...");
         // New destination is needed
         let newDestination = this.findClosestDestination(destinationType);

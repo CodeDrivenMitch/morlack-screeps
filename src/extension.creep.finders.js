@@ -43,7 +43,8 @@ Creep.prototype.findClosestSourceWithEmptySlot = function (range = -1) {
             filter(source) {
                 return (source.energy > 0)
                     && (source.hasEmptySlot())
-                    && (range === -1 || self.pos.inRangeTo(source, range));
+                    && (range === -1 || self.pos.inRangeTo(source, range))
+                    && source.isAvailable();
             }
         });
     }
@@ -52,7 +53,7 @@ Creep.prototype.findClosestSourceWithEmptySlot = function (range = -1) {
 Creep.prototype.findClosestSource = function () {
     return this.pos.findClosestByRange(FIND_SOURCES, {
         filter(source) {
-            return source.energy > 0;
+            return source.energy > 0 && source.isAvailable();
         }
     });
 };

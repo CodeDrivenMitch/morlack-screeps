@@ -2,6 +2,7 @@
 require('./extension.creep');
 require('./extension.room');
 require('./extension.tower');
+require('./extension.source');
 require('./extension.roomobject');
 import MyGame from './my_game';
 
