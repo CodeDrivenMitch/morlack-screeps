@@ -1,5 +1,17 @@
 let _ = require('lodash');
 
+StructureTower.prototype.getMemory = function() {
+    if(!Memory.towers) {
+        Memory.towers = {};
+    }
+
+    if(!Memory.towers[this.id]) {
+        Memory.towers[this.id] = {};
+    }
+
+    return Memory.towers[this.id];
+};
+
 StructureTower.prototype.execute = function() {
     if(this.energy < 10) {
         // Not enough energy to do anything, save cpu
@@ -11,6 +23,10 @@ StructureTower.prototype.execute = function() {
 
     if (attackTarget) {
         this.attack(attackTarget);
+        return;
+    }
+
+    if(this.getMemory().repairDisabled) {
         return;
     }
 
