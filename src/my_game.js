@@ -61,7 +61,7 @@ class MyGame {
                 });
 
                 parts = _.sortBy(parts, function(part) {
-                    return 10 - Configurations.BODY_PART_PRIORITY.indexOf(part);
+                    return Configurations.BODY_PART_PRIORITY.indexOf(part);
                 });
 
 
