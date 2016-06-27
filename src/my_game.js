@@ -1,4 +1,5 @@
 let _ = require('lodash');
+let Configurations = require('./configurations');
 
 class MyGame {
 
@@ -7,11 +8,11 @@ class MyGame {
     }
 
     checkSettings() {
-        if(!Memory.settings) {
+        if (!Memory.settings) {
             Memory.settings = {};
         }
 
-        if(!Memory.settings.amountOfCreeps) {
+        if (!Memory.settings.amountOfCreeps) {
             Memory.settings.amountOfCreeps = {
                 'harvester': 1,
                 'builder': 1,
@@ -24,7 +25,7 @@ class MyGame {
         _.each(this.findAllMyTowers(), (tower) => {
             try {
                 tower.execute();
-            } catch(error) {
+            } catch (error) {
                 console.log("Could not execute tower with id " + tower.id + " because of error " + error);
             }
         });
@@ -32,25 +33,37 @@ class MyGame {
 
     executeSpawnCheck() {
         let spawn = this.game.spawns.Spawn1;
-        if((spawn.spawning || spawn.room.energyAvailable < spawn.room.energyCapacityAvailable - spawn.room.energyCapacityAvailable%200) && (!Memory.settings.spawnOverride)) {
+        if (spawn.spawning) {
             return;
         }
 
-        let creeps = _.countBy(this.game.creeps, function(creep) {
+        let creepAmount = _.countBy(this.game.creeps, function (creep) {
             return creep.memory.role;
         });
-        
-        _.find(Memory.settings.amountOfCreeps, function(amount, role) {
-            if(!creeps[role] || creeps[role] < amount) {
+
+        _.find(Configurations.ROLE_PRIORITY, function (role) {
+            let currentCreeps = creepAmount[role] || 0;
+            let neededCreeps = Memory.settings.amountOfCreeps[role];
+            if (currentCreeps < neededCreeps) {
+                let partConfig = Configurations.BODY_CONFIGURATIONS[role].type;
+
                 let parts = [];
                 let usableEnergy = spawn.room.energyAvailable;
-                let times = (usableEnergy - usableEnergy%200) / 200;
-                if(times === 0) {
+                let times = (usableEnergy - usableEnergy % partConfig.cost) / partConfig.cost;
+                if (times === 0) {
                     return false;
                 }
-                _.times(times, () => {parts.push(WORK)});
-                _.times(times, () => {parts.push(CARRY)});
-                _.times(times, () => {parts.push(MOVE)});
+
+                _.times(times, () => {
+                    _.each(partConfig.parts, (part) => {
+                        parts.push(part);
+                    });
+                });
+
+                parts = _.sortBy(parts, function(part) {
+                    return 10 - Configurations.BODY_PART_PRIORITY.indexOf(part);
+                });
+
 
                 let name = spawn.createCreep(parts, undefined, {role: role});
 

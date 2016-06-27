@@ -27,7 +27,6 @@ Creep.prototype.roleSupplierDestination = function () {
 Creep.prototype.roleSupplier = function () {
     if (!this.roleSupplierDestination()) {
         // Fallback role
-        this.roleUpgrader();
         return;
     }
 
