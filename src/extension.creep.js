@@ -58,6 +58,7 @@ Creep.prototype.actOnTarget = function () {
         case Source:
             return this.harvest(destination);
         case StructureSpawn:
+        case StructureExtension:
             return this.transfer(destination, RESOURCE_ENERGY);
         case StructureController:
             return this.upgradeController(destination);
