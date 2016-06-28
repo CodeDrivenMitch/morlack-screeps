@@ -10,7 +10,7 @@ Creep.prototype.getDestinationPriorities = function (targetType) {
         case C.TARGET_HARVESTER_SOURCE:
             return [this.findClosestSource];
         case C.TARGET_HARVESTER_CONTAINER:
-            return [this.findClosestEmptyContainer, this.findClosestEmptySpawnStructure];
+            return [this.findClosestEmptyContainer, this.findStorage, this.findClosestEmptySpawnStructure];
         case C.TARGET_UPGRADER_UPGRADE:
             return [this.findRoomController];
         case C.TARGET_UPGRADER_SOURCE:
@@ -18,7 +18,7 @@ Creep.prototype.getDestinationPriorities = function (targetType) {
         case C.TARGET_BUILDER_BUILD:
             return [this.findClosestBuildingSite];
         case C.TARGET_BUILDER_SOURCE:
-            return [this.findClosestFilledContainer(), this.findClosestSourceWithEmptySlot];
+            return [this.findClosestFilledContainer(), this.findStorage, this.findClosestSourceWithEmptySlot];
         case C.TARGET_SUPPLIER_PUT:
             return [this.findClosestEmptySpawnStructure, this.findClosestEmptyTower, this.findStorage];
         case C.TARGET_SUPPLIER_GET:
