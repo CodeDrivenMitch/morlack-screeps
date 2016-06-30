@@ -63,6 +63,7 @@ Creep.prototype.actOnTarget = function () {
         case StructureStorage:
             switch(this.getDestinationType()) {
                 case C.TARGET_SUPPLIER_GET:
+                case C.TARGET_BUILDER_SOURCE:
                     return destination.transfer(this, RESOURCE_ENERGY);
                 default:
                     return this.transfer(destination, RESOURCE_ENERGY);
