@@ -14,11 +14,11 @@ Creep.prototype.getDestinationPriorities = function (targetType) {
         case C.TARGET_UPGRADER_UPGRADE:
             return [this.findRoomController];
         case C.TARGET_UPGRADER_SOURCE:
-            return [this.findClosestFilledContainer(6), this.findClosestSource];
+            return [this.findClosestFilledContainer(), this.findStorage];
         case C.TARGET_BUILDER_BUILD:
             return [this.findClosestBuildingSite];
         case C.TARGET_BUILDER_SOURCE:
-            return [this.findClosestFilledContainer(), this.findStorage, this.findClosestSourceWithEmptySlot];
+            return [this.findClosestFilledContainer(6), this.findStorage, this.findClosestSourceWithEmptySlot];
         case C.TARGET_SUPPLIER_PUT:
             return [this.findClosestEmptySpawnStructure, this.findClosestEmptyTower, this.findStorage];
         case C.TARGET_SUPPLIER_GET:
@@ -53,7 +53,7 @@ Creep.prototype.findClosestSourceWithEmptySlot = function (range = -1) {
 Creep.prototype.findClosestSource = function () {
     return this.pos.findClosestByRange(FIND_SOURCES, {
         filter(source) {
-            return source.energy > 0 && source.isAvailable();
+            return (source.energy > 0) && source.isAvailable();
         }
     });
 };
@@ -61,7 +61,7 @@ Creep.prototype.findClosestSource = function () {
 Creep.prototype.findStorage = function () {
     return this.pos.findClosestByRange(FIND_STRUCTURES, {
         filter(structure) {
-            return (structure.structureType == STRUCTURE_STORAGE);
+            return (structure.structureType == STRUCTURE_STORAGE) && structure.hasAvailableEnergy();
         }
     });
 };
@@ -74,7 +74,8 @@ Creep.prototype.findClosestFilledContainer = function (range = -1) {
             filter(structure) {
                 return (structure.structureType == STRUCTURE_CONTAINER)
                     && (structure.store.energy >= self.carryCapacity)
-                    && (range === -1 || self.pos.inRangeTo(structure, range));
+                    && (range === -1 || self.pos.inRangeTo(structure, range))
+                    && structure.hasAvailableEnergy();
             }
         });
     }

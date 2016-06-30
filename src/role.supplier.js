@@ -7,7 +7,7 @@ Creep.prototype.roleSupplierDestination = function () {
 
     if(     (!destination)
         ||  (!this.isDestinationType(destinationType))
-        ||  (executing  && (destination.energy >= destination.energyCapacity))
+        ||  (executing  && (!destination.energy || destination.energy >= destination.energyCapacity))
         ||  (!executing && (!!destination.store && destination.store.energy > 0))
         ||  (!executing && (!destination.store && destination.energy > 0))
     )
