@@ -7,7 +7,8 @@ Source.prototype.isAvailable = function() {
     let self = this;
 
     _.each(Game.creeps, function(creep) {
-        if (creep.getDestination().id === self.id) {
+        let destination = creep.getDestination();
+        if (!!destination &&destination.id === self.id) {
             _.each(creep.body, function(bodyPart) {
                 if(bodyPart.type === MOVE) {
                     currentParts++;

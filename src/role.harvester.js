@@ -18,6 +18,7 @@ Creep.prototype.roleHarvesterDestination = function () {
         if(!newDestination) {
             return false;
         }
+        console.log("Found new destination: " + JSON.stringify(newDestination));
         this.setDestination(newDestination, destinationType);
     }
 

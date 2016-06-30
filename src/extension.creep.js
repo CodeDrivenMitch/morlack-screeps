@@ -61,7 +61,12 @@ Creep.prototype.actOnTarget = function () {
         case StructureTower:
         case StructureExtension:
         case StructureStorage:
-            return this.transfer(destination, RESOURCE_ENERGY);
+            switch(this.getDestinationType()) {
+                case C.TARGET_SUPPLIER_GET:
+                    return destination.transfer(this, RESOURCE_ENERGY);
+                default:
+                    return this.transfer(destination, RESOURCE_ENERGY);
+            }
         case StructureController:
             return this.upgradeController(destination);
         case StructureContainer:

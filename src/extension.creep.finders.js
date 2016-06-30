@@ -22,7 +22,7 @@ Creep.prototype.getDestinationPriorities = function (targetType) {
         case C.TARGET_SUPPLIER_PUT:
             return [this.findClosestEmptySpawnStructure, this.findClosestEmptyTower, this.findStorage];
         case C.TARGET_SUPPLIER_GET:
-            return [this.findClosesDroppedEnergy, this.findClosestFilledContainer()];
+            return [this.findClosesDroppedEnergy, this.findClosestFilledContainer(), this.findStorage];
         default:
             return [];
     }
