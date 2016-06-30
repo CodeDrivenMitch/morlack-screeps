@@ -31,9 +31,61 @@ class MyGame {
         });
     }
 
+    checkForRoleToSpawn(creepAmounts) {
+        return _.find(Configurations.ROLE_PRIORITY, function (role) {
+            let currentCreeps = creepAmounts[role] || 0;
+            let neededCreeps = Memory.settings.amountOfCreeps[role];
+            if (currentCreeps < neededCreeps) {
+                return true;
+            }
+        });
+    }
+
+    createBodyForRole(spawn, role) {
+        let partConfig = Configurations.BODY_CONFIGURATIONS[role].type;
+        let parts = [];
+        let usableEnergy = spawn.room.energyAvailable;
+        let times = (usableEnergy - usableEnergy % partConfig.cost) / partConfig.cost;
+        if (times === 0) {
+            return false;
+        }
+
+        _.times(times, () => {
+            _.each(partConfig.parts, (part) => {
+                parts.push(part);
+            });
+        });
+
+        parts = _.sortBy(parts, function(part) {
+            return Configurations.BODY_PART_PRIORITY.indexOf(part);
+        });
+
+        return parts;
+    }
+
+    spawnCreepForRole(spawn, role) {
+        let parts = this.createBodyForRole(spawn, role);
+        if(parts) {
+            let name = spawn.createCreep(parts, undefined, {role: role});
+
+            console.log("Spawning new creep " + name + " with role " + role);
+            Memory.lastSpawned = Game.time;
+        }
+    }
+
+    shouldSpawn() {
+        if(!Memory.lastSpawned) {
+            return false;
+        }
+        
+        let timeToSpawn = Memory.lastSpawned + Math.floor(1500 /_.sum(Memory.settings.amountOfCreeps)) - Game.time;
+        console.log("Time till spawn..." + timeToSpawn);
+        return timeToSpawn < 1;
+    }
+
     executeSpawnCheck() {
         let spawn = this.game.spawns.Spawn1;
-        if (spawn.spawning) {
+        if (spawn.spawning || !this.shouldSpawn()) {
             return;
         }
 
@@ -41,38 +93,11 @@ class MyGame {
             return creep.memory.role;
         });
 
-        _.find(Configurations.ROLE_PRIORITY, function (role) {
-            let currentCreeps = creepAmount[role] || 0;
-            let neededCreeps = Memory.settings.amountOfCreeps[role];
-            if (currentCreeps < neededCreeps) {
-                let partConfig = Configurations.BODY_CONFIGURATIONS[role].type;
+        let roleToSpawn = this.checkForRoleToSpawn(creepAmount);
 
-                let parts = [];
-                let usableEnergy = spawn.room.energyAvailable;
-                let times = (usableEnergy - usableEnergy % partConfig.cost) / partConfig.cost;
-                if (times === 0) {
-                    return false;
-                }
-
-                _.times(times, () => {
-                    _.each(partConfig.parts, (part) => {
-                        parts.push(part);
-                    });
-                });
-
-                parts = _.sortBy(parts, function(part) {
-                    return Configurations.BODY_PART_PRIORITY.indexOf(part);
-                });
-
-
-                let name = spawn.createCreep(parts, undefined, {role: role});
-
-                console.log("Spawning new creep " + name + " with role " + role);
-                return true;
-            } else {
-                return false;
-            }
-        })
+        if(roleToSpawn) {
+            this.spawnCreepForRole(spawn, roleToSpawn);
+        }
     }
 
     findAllMyTowers() {
